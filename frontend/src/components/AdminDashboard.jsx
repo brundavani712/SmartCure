@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, FilePlus, BarChart2 } from 'lucide-react';
+import { Users, FilePlus, BarChart2, Upload } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 const AdminDashboard = ({ token }) => {
@@ -55,6 +55,9 @@ const AdminDashboard = ({ token }) => {
         <div className={`tab ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => setActiveTab('reports')}>
           <BarChart2 size={16} style={{ display: 'inline', marginRight: '0.5rem' }}/> Reports
         </div>
+        <div className={`tab ${activeTab === 'import' ? 'active' : ''}`} onClick={() => setActiveTab('import')}>
+          <Upload size={16} style={{ display: 'inline', marginRight: '0.5rem' }}/> Import Data
+        </div>
       </div>
 
       {activeTab === 'register' && (
@@ -101,6 +104,42 @@ const AdminDashboard = ({ token }) => {
             </div>
             <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>Register & Generate ID</button>
           </form>
+        </div>
+      )}
+
+      {activeTab === 'import' && (
+        <div className="card" style={{ maxWidth: '600px' }}>
+          <h2 style={{ marginBottom: '1.5rem', fontSize: '1.25rem' }}>Upload JSON Dataset</h2>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Select a valid JSON dataset file to populate patients, consultations, and appointments instantly.</p>
+          <input 
+            type="file" 
+            accept=".json" 
+            onChange={async (e) => {
+              const file = e.target.files[0];
+              if (!file) return;
+              const reader = new FileReader();
+              reader.onload = async (event) => {
+                try {
+                  const jsonData = JSON.parse(event.target.result);
+                  const res = await fetch('http://localhost:5000/api/upload-dataset', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify(jsonData)
+                  });
+                  if (res.ok) {
+                    alert('Dataset successfully imported into the system!');
+                  } else {
+                    alert('Failed to import dataset. Ensure the JSON format is correct.');
+                  }
+                } catch(err) {
+                  alert('Invalid JSON file.');
+                }
+              };
+              reader.readAsText(file);
+            }} 
+            className="input" 
+            style={{ padding: '1rem', border: '2px dashed var(--border-color)', background: 'var(--bg-main)' }}
+          />
         </div>
       )}
 

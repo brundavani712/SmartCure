@@ -57,7 +57,7 @@ function App() {
     <div className="app-layout">
       <aside className="sidebar">
         <div className="sidebar-header">
-          HMS Portal
+          SmartCure
         </div>
         <div className="nav-menu">
           <div className="nav-item active">Dashboard</div>

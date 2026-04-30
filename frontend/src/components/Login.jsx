@@ -34,7 +34,7 @@ const Login = ({ onLogin }) => {
       <div className="auth-card">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '2rem', color: 'var(--primary)' }}>
           <Activity size={32} />
-          <h2 style={{ fontSize: '1.5rem', fontWeight: '700' }}>HMS Portal</h2>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: '700' }}>SmartCure</h2>
         </div>
         
         <form onSubmit={handleSubmit}>

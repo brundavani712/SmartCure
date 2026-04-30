@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 
 const JWT_SECRET = 'supersecret_hms_key_2026';
 const DB_FILE = './db.json';
@@ -145,6 +145,22 @@ app.get('/api/consultations/:patientId', authenticate, (req, res) => {
 app.get('/api/bills/:patientId', authenticate, (req, res) => {
   if (req.user.role === 'patient' && req.user.username !== req.params.patientId) return res.status(403).json({ error: 'Forbidden' });
   res.json((readDb().bills || []).filter(b => b.patientId === req.params.patientId));
+});
+
+// UPLOAD DATASET
+app.post('/api/upload-dataset', authenticate, (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+  const dataset = req.body;
+  const db = readDb();
+  
+  if (dataset.patients) db.patients.push(...dataset.patients);
+  if (dataset.users) db.users.push(...dataset.users);
+  if (dataset.consultations) db.consultations.push(...dataset.consultations);
+  if (dataset.appointments) db.appointments.push(...dataset.appointments);
+  if (dataset.bills) db.bills.push(...dataset.bills);
+  
+  writeDb(db);
+  res.json({ message: 'Dataset uploaded and merged successfully' });
 });
 
 // REPORTS
